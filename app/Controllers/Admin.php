@@ -358,7 +358,7 @@ class Admin extends BaseController{
             }
          }
          $loop_exit = 0;
-         foreach($class_arr as $k => $v){
+         foreach($class_arr as $k => $v){2
             if($loop_exit == 1){
             break;
             }

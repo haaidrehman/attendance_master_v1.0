@@ -191,7 +191,7 @@ $(document).ready(function () {
 				success: function (response) {
 					if (response.class_response_card.success == true) {
 						var html = `<a href="http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance/${response.class_response_card.id}">
-						<div class="inner_border">
+						<div class="card float-left p-4 ml-3">
 							<div>
 								<strong>Class</strong>
 								<span>${response.class_response_card.class}</span>
@@ -214,6 +214,23 @@ $(document).ready(function () {
 		}
 
 	});
+
+
+
+	// Pick a date and assign it into the anchor tag
+
+	$('#date_picker').on('change', function () {
+		var date = $('#date_picker').val();
+		var ad_id = $('#ad_id').val();
+		var getclass = $('#class_id').val();
+		var subject = $('#subject').val();
+		$url = `http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance/${ad_id}/${getclass}/${subject}/date/${date}`;
+
+		$('#pick_date').attr('href', $url);
+
+	});
+
+
 
 });
 
@@ -248,6 +265,14 @@ function add_to_attendance(type, attnd_cat_id, class_id, sub_id, roll_no, std_id
 				$(`${cell} li.a-card .result-text`).text('Attendance added');
 				$(`${cell} li.a-card .result-text`).css('display', 'block');
 			}
+			else if (response.result.isPresent == 1) {
+				var html = `<a href="javascript:void(0);" class="btn btn-success" onclick="add_to_attendance(${type}, ${attnd_cat_id}, ${class_id}, ${sub_id}, ${roll_no}, ${std_id}, ${staff_id}, '${cell_count}')">P</a>
+				`;
+
+				$(`${cell} li .attnd-btn-cell.p`).html(html);
+				$(`${cell} li.a-card .result-text`).text('Attendance added');
+				$(`${cell} li.a-card .result-text`).css('display', 'block');
+			}
 			else if (response.result == 'attnd_alrdy_taken') {
 				console.log('dkldkldklkdlkdlkldkl');
 				$(`${cell} li.a-card .result-text`).text('Attendance already taken');
@@ -255,4 +280,90 @@ function add_to_attendance(type, attnd_cat_id, class_id, sub_id, roll_no, std_id
 			}
 		}
 	});
+}
+
+
+// Select a date then fetch and display the attendance records based on the class and date selected.
+function date_selector(ad_id, class_id) {
+	var date = $('#select_date').val();
+	$('#show_date').text(date);
+	var url = `http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance_detail/ajax/${ad_id}/${class_id}/date/${date}`;
+	var browser_url = `http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance_detail/${ad_id}/${class_id}/date/${date}`;
+	window.history.pushState('', '', browser_url);
+	//window.location.href = url;
+
+	$.ajax({
+		url: url,
+		method: 'get',
+		data: {
+			ad_id: ad_id,
+			class_id: class_id,
+			date: date,
+			type: 'reload_new_data'
+		},
+		// dataType: 'json',
+		success: function (response) {
+
+			if (response === 'no_record') {
+				//$('table').hide();
+				var msg = `<div class="px-3"><div class="alert alert-danger">No Record Found!</div></div>`
+				$('.table-stats').html(msg);
+
+				//alert('AKlksl');
+			}
+			else {
+				var table = `<table class="table">
+				<thead>
+				   <tr>
+					  <th>#</th>
+					  <th>Name</th>
+					  <th>Roll Number</th>
+					  <th>Present</th>
+					  <th>Absent</th>
+					  <th></th>
+				   </tr>
+				</thead>
+				<tbody>
+				${response}
+				</tbody>
+				</table>`;
+
+				$('.table-stats').html(table);
+				//$('table').show();
+			}
+		}
+	});
+
+}
+
+// Get a students attendance history by specifying the range of starting date and ending date
+function attendance_search_result(ad_id, std_id, subject_id) {
+	var a_starting_date = $('#a_starting_date').val();
+	var a_ending_date = $('#a_ending_date').val();
+
+	// var url = `http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance_detail/students/attendance_range/([1-9]{1,3})/([1-9]{1,3})/([1-5]{1})/(:any)/(:any)`;
+	var url = `http://localhost/student_attendance_master_ci_4.0.4/teacher/d/attendance_detail/students/attendance_range/${ad_id}/${std_id}/${subject_id}/${a_starting_date}/${a_ending_date}`;
+	if (a_starting_date != '' && a_ending_date != '') {
+		$.ajax({
+			url: url,
+			method: 'post',
+			data: {
+				ad_id: ad_id,
+				std_id: std_id,
+				subject_id: subject_id,
+				a_starting_date: a_starting_date,
+				a_ending_date: a_ending_date
+			},
+			success: function (response) {
+				if (response == 'no_record') {
+					$('#range_table').html(`<div class="mx-4"><div class="alert alert-danger">No records found!</div></div>`);
+					$('#range_table').css('display', 'block');
+				}
+				else {
+					$('#range_table').html(response);
+					$('#range_table').css('display', 'block');
+				}
+			}
+		});
+	}
 }

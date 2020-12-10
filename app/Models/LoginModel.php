@@ -75,6 +75,7 @@ class LoginModel extends Model{
      else{
         // u_a means unavailable
         $return_val['result'] = 'u_a';
+        
      }
      return $return_val;
   }

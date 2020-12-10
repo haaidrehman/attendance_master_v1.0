@@ -24,20 +24,22 @@ class Student extends BaseController{
 
 
     public function login(){
+       //echo strlen(password_hash('RakeshRoshan2989', PASSWORD_BCRYPT));
       $data = ['valid_err_email' => null, 'valid_err_pass' => null];
        if($this->request->getMethod() == 'post'){
         $validation_rules = ['email' => 'required|valid_email', 'password' => 'required|string'];
         
           if($this->validate($validation_rules)){
-            $data['email'] = $this->request->getPost('email', FILTER_VALIDATE_INT); 
+            $data['email'] = $this->request->getPost('email', FILTER_VALIDATE_EMAIL); 
             $data['password'] = $this->request->getPost('password', FILTER_SANITIZE_STRING); 
 
              $db = new LoginModel();
              $data['table'] = 'student';
              $result = $db->check_record_n_allow($data);
+
              if($result['result'] == 'success'){
                $this->session->set(['isStdLogin' => true, 'stdId' => $result['user_id'], 'stdName' => $result['user_fname'].' '.$result['user_lname']]);
-               return redirect()->to(base_url().'/student/account');
+               return redirect()->to(base_url().'/student/dashboard');
                exit();
              }
              else if($result['result'] == 'p_unmatched'){

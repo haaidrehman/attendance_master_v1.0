@@ -48,14 +48,34 @@ $routes->post('verify_otp', 'Student::verify_otp');
 $routes->get('teachers', 'Admin::teacher_detail', ['filter' => 'auth_admin']);
 
 $routes->group('teacher', function($routes){
-	$routes->match(['get', 'post'], 'login', 'Teacher::login', ['filter' => 'honeypot']);
+	$routes->match(['get', 'post'], 'login', 'Teacher::login', ['filter' => 'teacher_log_check']);
 	$routes->match(['get', 'post'], 'add', 'Admin::teacher_add', ['filter' => 'auth_admin']);
 	$routes->post('manage', 'Admin::teacher_manage', ['filter' => 'auth_admin']);
 	$routes->get('activation_link/([a-zA-Z]+(_|\.)?[a-zA-Z0-9]*@[a-z]+\.(com))', 'Admin::resendActivationLink/$1', ['filter' => 'auth_admin']);
 	$routes->get('dashboard', 'Teacher::dashboard', ['filter' => 'auth_teacher']);
 	$routes->get('logout', 'Teacher::logout', ['filter' => 'auth_teacher']);
+
 	$routes->post('d/a/class_add', 'Teacher::add_attendance_class', ['filter' => 'auth_teacher']);
+
+	$routes->get('d/attendance/([0-9]{1,2})/class/([1-9]{1,2})/subject/(:any)/y/([0-9]{4})', 'Teacher::date_wise_filter/$1/$2/$3/$4', ['filter' => 'auth_teacher_csrf']);
+
+	/* => */$routes->get('d/attendance/([0-9]{1,2})/([1-9]{1,2})/(:any)/date/(:any)', 'Teacher::filter_select/$1/$2/$3/$4', ['filter' => 'auth_teacher_csrf']);
+
 	$routes->get('d/attendance/([0-9]{1,2})', 'Teacher::disp_attendance_chart/$1', ['filter' => 'auth_teacher_csrf']);
+
+	$routes->get('d/attendance_detail/([1-9]{1,2})/([1-9]{1,2})/date/(:any)', 'Teacher::class_attendance_detail/$1/$2/$3', ['filter' => 'auth_teacher_csrf']);
+
+	$routes->get('d/attendance_detail/ajax/([1-9]{1,2})/([1-9]{1,2})/date/(:any)', 'Teacher::class_attendance_detail_ajax_load/$1/$2/$3', ['filter' => 'auth_teacher_csrf']);
+
+	// View all students in a class 
+	$routes->get('d/attendance_detail/students/([1-9]{1,2})/([1-9]{1,2})/([1-5]){1}', 'Teacher::view_student_list/$1/$2/$3', ['filter' => 'auth_teacher_csrf']);
+
+	// View a single student detail from a specific class
+	$routes->get('d/attendance_detail/students/detail/([1-9]{1,2})/([1-9]{1,2})/([1-9]{1,3})/([1-5]{1})', 'Teacher::view_student_details/$1/$2/$3/$4', ['filter' => 'auth_teacher_csrf']);
+
+	// Fetch attendance detail of a specific student from a range of date
+	$routes->post('d/attendance_detail/students/attendance_range/([1-9]{1,3})/([1-9]{1,3})/([1-5]{1})/(:any)/(:any)', 'Teacher::view_attendance_from_range/$1/$2/$3/$4/$5');
+
 	$routes->post('d/([0-9]{1})/([0-9]{1,2})/([0-9]{1,2})/([0-9]{1,2})/([0-9]{1,2})', 'Teacher::add_student_attendance/$1/$2/$3/$4/$5');
 });
 

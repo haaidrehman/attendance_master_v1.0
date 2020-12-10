@@ -19,10 +19,10 @@
 .login-circle{
     padding-top: 15px;
     padding-bottom: 5px;
-    -webkit-transition: all 0.3s ease-in;
-     -moz-transition: all 0.3s ease-in;
-      -ms-transition: all 0.3s ease-in;
-          transition: all 0.3s ease-in;
+    -webkit-transition: all 0.15s ease-in;
+     -moz-transition: all 0.15s ease-in;
+      -ms-transition: all 0.15s ease-in;
+          transition: all 0.15s ease-in;
           position: relative;
 }
 .login-circle.l:hover{ 

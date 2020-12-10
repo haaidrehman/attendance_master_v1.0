@@ -123,7 +123,7 @@ class BaseModel extends Model{
       $builder->select('attendance_detail.id, attendance_detail.class_id, attendance_detail.teacher_id, subjects.name, attendance_detail.year');
       $builder->join('subjects', 'attendance_detail.subject_id = subjects.id');
       $builder->where(['teacher_id' => $id]);
-     //$builder->orderBy('id', 'DESC');
+     $builder->orderBy('attendance_detail.class_id', 'ASC');
       $r = $builder->get();
       if($r->getResultArray() != null){
          return $r->getResultArray();
@@ -134,22 +134,79 @@ class BaseModel extends Model{
    }
 
 
+   public function date_wise_filter($ad_id, $year){
+       $builder = $this->db->table('attendance_detail');
+       $builder->select('attendance_tbl.date');
+       $builder->join('attendance_tbl', 'attendance_detail.id = attendance_tbl.ad_id');
+       $builder->where(['attendance_detail.id' => $ad_id, 'attendance_detail.year' => $year]);
+       $r = $builder->get();
+       return $r->getRowArray();
+   }
+
+   public function date_wise_filter_select($ad_id, $date){
+       $builder = $this->db->table('attendance_detail');
+       $builder->select('student.fname, student.lname, student.roll_no, attendance_tbl.present, attendance_tbl.absent');
+       $builder->join('attendance_tbl', 'attendance_detail.id = attendance_tbl.ad_id');
+       $builder->join('student', 'attendance_tbl.std_id = student.id');
+       $builder->where(['attendance_tbl.ad_id' => $ad_id, 'attendance_tbl.date' => $date]);
+       $r = $builder->get();
+       if($r->getResultArray() != null){
+          return $r->getResultArray();
+       }
+       else{
+        return false;
+       }
+   }
+
+
+   // SELECT attendance_detail.id, student.id as student_id, student.roll_no, attendance_detail.year, attendance_tbl.present, attendance_tbl.absent FROM attendance_detail JOIN student JOIN attendance_tbl ON attendance_detail.class_id = student.class_id AND student.id = attendance_tbl.std_id WHERE attendance_detail.class_id = 4 AND attendance_detail.year = '2020' AND attendance_detail.subject_id = '5';
+
+
+
    // Get the list all of the all the students from attendance_detail table 
-   public function list_students($id){
+   public function list_students($id, $date){
       $builder = $this->db->table('attendance_detail');
       $builder->select('id, class_id, subject_id, year');
       $builder->where(['attendance_detail.id' => $id]);
       $r = $builder->get();
       $row = $r->getResultArray();
       $row = $row[0];
-      return $this->filter_students($row, $builder);
+      return $this->filter_students($row, $builder, $date);
    }
 
-   public function filter_students($row, $builder){
-      $builder->select('attendance_detail.id, attendance_detail.class_id, attendance_detail.subject_id, attendance_detail.year, student.fname,student.lname, student.roll_no, student.id as student_id');
+
+   public function ifDateExist($date){
+       $builder = $this->db->table('attendance_tbl');
+       $builder->select('id');
+       $builder->where(['date' => $date]);
+       $r = $builder->get();
+       if($r->getResultArray() != null){
+          return true;
+       }
+       else{
+
+        return false;
+       }
+
+   }
+
+
+
+   public function filter_students($row, $builder, $date){
+      $builder->select('attendance_detail.id, attendance_detail.class_id, attendance_detail.subject_id, attendance_detail.year, student.fname,student.lname, student.roll_no, student.id as student_id, attendance_tbl.present, attendance_tbl.absent, attendance_tbl.date');
       $builder->join('student', 'attendance_detail.class_id = student.class_id');
-      $builder->where(['attendance_detail.id' => $row['id'], 'attendance_detail.class_id' => $row['class_id'], 'attendance_detail.subject_id' => $row['subject_id'], 'attendance_detail.year' => $row['year'], 'student.roll_no !=' => 'null']);
-      $builder->orderBy('student.roll_no', 'ASC');
+      if(! $this->ifDateExist($date)){
+         $builder->join('attendance_tbl', 'attendance_detail.id != attendance_tbl.ad_id', 'left');
+         $builder->where(['attendance_detail.id' => $row['id'], 'attendance_detail.class_id' => $row['class_id'], 'attendance_detail.subject_id' => $row['subject_id'], 'attendance_detail.year' => $row['year'], 'student.roll_no !=' => 'null']);
+           $builder->orderBy('student.roll_no', 'ASC');
+      }
+      else{
+         $builder->join('attendance_tbl', 'student.id = attendance_tbl.std_id AND attendance_tbl.subject_id = attendance_detail.subject_id', 'left');
+         $builder->where(['attendance_detail.id' => $row['id'], 'attendance_detail.class_id' => $row['class_id'], 'attendance_detail.subject_id' => $row['subject_id'], 'attendance_detail.year' => $row['year'], 'student.roll_no !=' => 'null', 'date' => $date]);
+         $builder->orderBy('student.roll_no', 'ASC');
+      }
+      
+      
       $r = $builder->get();
       if($r->getResultArray() != null){
          return $r->getResultArray();
@@ -172,7 +229,7 @@ class BaseModel extends Model{
             $p = 1;
             $a = 0;
          }
-      $r = $builder->insert(['ad_id' => $data['attnd_cat_id'], 'class_id' => $data['class_id'], 'subject_id' => $data['sub_id'], 'std_id' => $data['std_id'], 'teacher_id' => $data['staff_id'], 'present' => $p, 'absent' => $a, 'date' => $data['date']]);
+      $r = $builder->insert(['ad_id' => $data['attnd_cat_id'], 'class_id' => $data['class_id'], 'subject_id' => $data['sub_id'], 'std_id' => $data['std_id'], 'roll_no' => $data['roll_no'], 'teacher_id' => $data['staff_id'], 'present' => $p, 'absent' => $a, 'date' => $data['date']]);
       if($r){
          return true;
       }
@@ -192,6 +249,83 @@ class BaseModel extends Model{
          return true;
       }
    }
+
+
+   public function get_total_attendance($ad_id, $class_id){
+      $builder = $this->db->table('attendance_tbl');
+      $builder->select('student.fname, student.lname, student.roll_no, attendance_tbl.present, attendance_tbl.absent, attendance_tbl.date');
+      $builder->join('student', 'attendance_tbl.class_id = student.class_id AND attendance_tbl.std_id = student.id');
+      $builder->where(['ad_id' => $ad_id, 'attendance_tbl.class_id' => $class_id]);
+      $builder->orderBy('roll_no');
+      $r = $builder->get();
+      if($r->getResultArray() != null){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+   }
+
+   public function get_subject($ad_id){
+      $builder = $this->db->table('attendance_tbl');
+      $builder->select('subjects.name');
+      $builder->join('subjects', 'attendance_tbl.subject_id = subjects.id');
+      $builder->where(['ad_id' => $ad_id]);
+      $builder->limit('1');
+      $r = $builder->get();
+      if($r->getResultArray() != null){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+
+   }
+
+   public function get_all_students($ad_id, $class_id){
+      $builder = $this->db->table('attendance_detail');
+      $builder->select('student.id, student.class_id, student.fname, student.lname, student.roll_no');
+      $builder->join('student', 'attendance_detail.class_id = student.class_id');
+      $builder->where(['attendance_detail.id' => $ad_id]);
+      $builder->orderBy('student.roll_no', 'ASC');
+      $r = $builder->get();
+      if($r->getResultArray()){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+   }
+
+   public function get_student_details($id){
+      $builder = $this->db->table('student');
+      $builder->select('student.id, student.fname, student.lname, student.roll_no, student.age, student.gender, student.phone, student.email, student.address');
+      $builder->where(['id' => $id]);
+      $r = $builder->get();
+      if($r->getResultArray()){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+   }
+
+    // Fetch attendance detail of a specific student from a range of date
+   public function fetch_attendance_from_range($ad_id, $std_id, $subject_id, $start_date, $end_date){
+      $builder = $this->db->table('attendance_tbl');
+      $builder->select('student.fname, student.lname, student.roll_no, attendance_tbl.present, attendance_tbl.absent, attendance_tbl.date');
+      $builder->join('student', 'attendance_tbl.std_id = student.id');
+      $builder->where(['attendance_tbl.ad_id' => $ad_id, 'attendance_tbl.std_id' => $std_id, 'attendance_tbl.subject_id' => $subject_id, 'date >=' => $start_date, 'date <=' => $end_date]);
+      $builder->orderBy('attendance_tbl.date', 'ASC');
+      $r = $builder->get();
+      if($r->getResultArray()){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+   }
+
 }
 
 ?>

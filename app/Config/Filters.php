@@ -16,7 +16,8 @@ class Filters extends BaseConfig
 		'auth_teacher_csrf' => [
 			\App\Filters\TeacherAuth::class, 
 			\CodeIgniter\Filters\CSRF::class
-			]
+		],
+		'teacher_log_check' => \App\Filters\TeacherLogged::class,
 	];
 
 	// Always applied before every request

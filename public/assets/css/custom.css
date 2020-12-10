@@ -204,15 +204,27 @@ display: none;
 .attendance-col .a-card{
     position: relative;
 }
-.result-text{
+.result-text.text-success{
     position: absolute;
-    top: 54px;
-    left: 0px;
+    bottom: 8px;
+    left: 16px;
     font-size: 15px;
     display: none;
     line-height: 15px;
 }
-
+.attendance-h a{
+    font-size: 20px;
+}
+.append-dark-bg{
+    background: #f1f2f7;
+    height: 85vh;
+}
+#range_table{
+    display: none;
+}
+.custom-card-bg{
+    background-color: #cafff8;
+}
 /*-------media query-------*/
 
 @media only screen and (min-width: 768px) and (max-width: 991px){
