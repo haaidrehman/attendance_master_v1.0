@@ -37,9 +37,9 @@ $session = Config\Services::session();
                                 </thead>
                                 <tbody>
                                     <?php
-                                    echo '<pre>';
-                                    print_r($records); 
-                                    echo '</pre>';
+                                    // echo '<pre>';
+                                    // print_r($records); 
+                                    // echo '</pre>';
                                         $i = 1;
                                        foreach($records as $v){
                                          ?>

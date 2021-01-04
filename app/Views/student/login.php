@@ -9,7 +9,7 @@
                     <form method="post">
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="email" name="email" class="form-control"
+                            <input type="email" name="email" class="remove__outline form-control"
                                 value="<?php echo set_value('email'); ?>" placeholder="Email">
                             <span class="field-error">
                                 <?php
@@ -22,7 +22,7 @@
                         </div>
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="Password">
+                            <input type="password" name="password" class="remove__outline form-control" placeholder="Password">
                             <span class="field-error">
                                 <?php
                            if($valid_err_pass != null){

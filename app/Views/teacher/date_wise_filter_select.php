@@ -59,12 +59,12 @@ if($records != false){
                                  <?php
                                  if($v['present'] == 1){
                                  ?>
-                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_check_1814079.png'; ?>">
+                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_check_square_3830978.png'; ?>">
                                  <?php
                                  }
                                  else if($v['present'] == 0){
                                  ?>
-                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_cross_646197.png'; ?>">
+                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_close_3830967.png'; ?>" width="36" height="36">
                                  <?php
                                  }
                                  ?>
@@ -73,12 +73,12 @@ if($records != false){
                                  <?php
                                  if($v['absent'] == 1){
                                  ?>
-                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_check_1814079.png'; ?>">
+                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_check_square_3830978.png'; ?>">
                                  <?php
                                  }
                                  else if($v['absent'] == 0){
                                  ?>
-                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_cross_646197.png'; ?>">
+                                 <img src="<?php echo base_url().'/public/assets/images/icons/iconfinder_close_3830967.png'; ?>" width="36" height="36">
                                  <?php
                                  }
                                  ?>

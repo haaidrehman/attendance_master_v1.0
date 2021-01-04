@@ -85,7 +85,6 @@ $routes->group('class', ['filter' => 'auth_admin'], function($routes){
 	$routes->get('', 'Admin::student_classes');
 	$routes->get('detail/?([0-9]{1,2})?', 'Admin::class_list/$1');
 	$routes->get('([0-9]{1,2})/student/([0-9]{1,2})/roll/([0-9]{1,2})', 'Admin::update_rollno/$1/$2/$3');
-	$routes->get('timetable', 'Admin::class_time_tbl');
 });
 
 // To add optional parameter in uri simply put the placeholder or expression between ?(placeholder)?
@@ -96,7 +95,12 @@ $routes->get('registration/success', 'Student::reg_success', ['filter' => 'auth_
 $routes->group('student', function($routes){
 	$routes->get('class', 'Admin::class_categories', ['filter' => 'auth_admin']);
 	$routes->match(['get', 'post'], 'login', 'Student::login');
-	$routes->get('account', 'Student::student_account');
+	$routes->match(['get', 'post'], 'dashboard', 'Student::student_account', ['filter' => 'student_auth']);
+	$routes->match(['get', 'post'], 'profile/upload', 'Student::std_file_upload', ['filter' => 'student_auth']);
+	$routes->get('attendance/([1-9]{1,3})', 'Student::student_attendance_base/$1', ['filter' => 'student_auth']);
+	$routes->post('attendance/detail/([0-9]{1,3})/([1-5]{1})/([0-9]{1,2})/(:any)', 'Student::student_attendance_detail/$1/$2/$3/$4', ['filter' => 'student_auth']);
+	$routes->get('notification/([0-9]{1,3})', 'Student::student_notification/$1', ['filter' => 'student_auth']);
+	$routes->match(['get', 'post'], 'statistics', 'Student::attendance_statistics', ['filter' => 'student_auth']);
 });
 
 /**

@@ -231,6 +231,11 @@ $(document).ready(function () {
 	});
 
 
+	// Student Dashboard profile picture upload
+	$('#profile_pic').on('change', function () {
+		$('#file_upload_wrapper').css('display', 'inline-block');
+	});
+
 
 });
 
@@ -367,3 +372,152 @@ function attendance_search_result(ad_id, std_id, subject_id) {
 		});
 	}
 }
+
+
+// Fetch attendance detail when a student selects a subject 
+function get_attendance_detail(std_id, subject_id, month) {
+	// $('#attendance_result_chart').html('');
+	var year = $('#attendance_year_session').val();
+	var url = `http://localhost/student_attendance_master_ci_4.0.4/student/attendance/detail/${std_id}/${subject_id}/${month}/${year}`;
+	$.ajax({
+		url: url,
+		method: 'post',
+		data: {
+			std_id: std_id,
+			subject_id: subject_id,
+			month: month,
+			year: year
+		},
+		success: function (response) {
+
+
+			$('#attendance_result_chart').html(response);
+		}
+
+	});
+	// alert(`${std_id} : ${subject_id} : ${month}`);
+}
+
+// Select a month
+function getMonths(std_id, subject) {
+
+	let months = {
+		'1': 'January',
+		'2': 'February',
+		'3': 'March',
+		'4': 'April',
+		'5': 'May',
+		'6': 'June',
+		'7': 'July',
+		'8': 'August',
+		'9': 'September',
+		'10': 'October',
+		'11': 'November',
+		'12': 'December'
+
+	};
+
+
+	let output = `<div class='col-md-12'><ul class='list-unstyled month-selector'>`;
+	let c = 0;
+	for (let key in months) {
+		if (c < 6) {
+			output += `<li><a href='javascript:void(0);' onclick='get_attendance_detail(${std_id}, ${subject}, ${key})'>${months[key]}</a></li>`;
+			c++;
+		}
+		// console.log(key);
+		// console.log(months[key]);
+	}
+	output += "</div>";
+
+	if (c == 6) {
+		c++;
+		output += "<div class='col-md-12'><ul class='list-unstyled month-selector'>";
+		let name = null;
+		for (let key in months) {
+			if (c <= 12) {
+				name = months[c];
+				output += `<li><a href='javascript:void(0);' onclick='get_attendance_detail(${std_id}, ${subject}, ${c})'>${name}</a></li>`;
+			}
+
+			c++;
+		}
+	}
+
+	$('.select-year-attendance').css('display', 'block');
+	$('#attendance_result').html(output);
+
+}
+
+
+
+$(document).ready(function () {
+	//$('#graph_btn').on('click', function () {
+	$.ajax({
+		url: 'http://localhost/student_attendance_master_ci_4.0.4/student/statistics',
+		method: 'post',
+		dataType: 'json',
+		success: function (response) {
+			var days = [];
+			var months = [];
+			var attendance_count = [];
+
+			for (var i in response.month_arr) {
+				for (var p in response.month_arr[i]) {
+					months.push(response.month_arr[i][p]);
+				}
+			}
+
+			for (var i in response.attendance_count_arr) {
+				for (var p in response.attendance_count_arr[i]) {
+					attendance_count.push(response.attendance_count_arr[i][p]);
+				}
+			}
+
+			for (var i = 0; i <= 30; i++) {
+				days.push(i);
+			}
+			//months = response.month_arr[1].months;
+
+			console.log(months);
+			console.log(attendance_count);
+			console.log(days);
+
+
+			var chartdata = {
+				labels: months, // Y- axos
+				datasets: [
+					{
+						label: 'Attendance Score',
+						backgroundColor: 'rgba(200, 200, 200, 0.75)',
+						borderColor: 'rgba(200, 200, 200, 0.75)',
+						hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+						hoverBorderColor: 'rgba(200, 200, 200, 1)',
+						data: attendance_count // For X- axis,
+					}
+				]
+			};
+
+			var ctx = $('#mycanvas');
+			var barGraph = new Chart(ctx, {
+				type: 'bar',
+				data: chartdata,
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true,
+								precision: 0
+							}
+						}]
+					}
+				}
+			});
+
+		},
+		error: function (response) {
+
+		}
+	});
+	//});
+});

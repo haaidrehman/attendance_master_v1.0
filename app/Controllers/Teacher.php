@@ -209,6 +209,9 @@ class Teacher extends BaseController{
        $data['date'] = date('Y-m-d', now('Asia/Kolkata'));
       
        $subjects = ['1' => 'Hindi', '2' => 'English', '3' => 'Maths', '4' => 'Science', '5' => 'Social Studies'];
+       // echo '<pre>';
+       // print_r($data['records']);
+       // exit();
        if(! $data['records']){
          return redirect()->back()->with('no_std_record', 'No student record found', 2);
          exit();
@@ -261,22 +264,27 @@ class Teacher extends BaseController{
         $data['records'] = $db->base_attendance_category_list($this->session->get('staffId'));
 
         $links = '';
-        
-        $count = count($data['records']);
-        foreach($data['records'] as $k => $v){
-             $url = base_url().'/teacher/d/attendance_detail/'.$v['id'].'/'.$v['class_id'].'/date'.'/'.date('Y-m-d', now('Asia/Kolkata'));
-             $links .= "<a class='dropdown-item' href='$url'>Class {$v['class_id']}</a>";
-             if($count > 1){
-                $links .= "<div class='dropdown-divider'></div>";
-             }
-             $count--;
+        if($data['records'] != false){
+          $count = count($data['records']);
+          foreach($data['records'] as $k => $v){
+              $url = base_url().'/teacher/d/attendance_detail/'.$v['id'].'/'.$v['class_id'].'/date'.'/'.date('Y-m-d', now('Asia/Kolkata'));
+              $links .= "<a class='dropdown-item' href='$url'>Class {$v['class_id']}</a>";
+              if($count > 1){
+                  $links .= "<div class='dropdown-divider'></div>";
+              }
+              $count--;
+          }
         }
+      
+        
         return $links;
     }
 
     public function class_specific_students(){
       $db = new BaseModel();
       $data['records'] = $db->base_attendance_category_list($this->session->get('staffId'));
+      $links = '';
+      if($data['records'] != false){
       $subjects = ['1' => 'Hindi', '2' => 'English', '3' => 'Maths', '4' => 'Science', '5' => 'Social Studies'];
       foreach($subjects as $k => $v){
          if($data['records'][0]['name'] == $v){
@@ -287,8 +295,9 @@ class Teacher extends BaseController{
       // echo $subject_id;
       // echo '<pre>';
       // print_r($data['records']);exit();
-      $links = '';
-      $count = count($data['records']);
+      
+      
+        $count = count($data['records']);
         foreach($data['records'] as $k => $v){
              $url = base_url().'/teacher/d/attendance_detail/students/'.$v['id'].'/'.$v['class_id'].'/'.$subject_id;
              $links .= "<a class='dropdown-item' href='$url'>Class {$v['class_id']}</a>";
@@ -297,6 +306,7 @@ class Teacher extends BaseController{
              }
              $count--;
         }
+      }
         return $links;
 
     }
@@ -306,7 +316,8 @@ class Teacher extends BaseController{
       $db = new BaseModel();
       $data['records'] = $db->base_attendance_category_list($this->session->get('staffId'));
       $links = '';
-      $count = count($data['records']);
+      if($data['records'] != false){
+        $count = count($data['records']);
         foreach($data['records'] as $k => $v){
              $url = base_url().'/teacher/d/attendance_detail/statistics/'.$v['id'].'/'.$v['class_id'];
              $links .= "<a class='dropdown-item' href='$url'>Class {$v['class_id']}</a>";
@@ -315,6 +326,7 @@ class Teacher extends BaseController{
              }
              $count--;
         }
+      }
         return $links;
 
     }

@@ -5,13 +5,16 @@
                <ul class="nav navbar-nav">
                   <li class="menu-title">Menu</li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo base_url('student/profile'); ?>" >Profile</a>
+                     <a href="<?php echo base_url('student/dashboard'); ?>" >Profile</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo base_url('student/notification'); ?>" >Notification</a>
+                     <a href="<?php echo base_url('student/notification').'/'.$stdId; ?>" >Notification</a>
                   </li>
                   <li class="menu-item-has-children dropdown">
-                     <a href="<?php echo base_url('student/attendance'); ?>" >Attendance</a>
+                     <a href="<?php echo base_url('student/attendance').'/'.$stdId; ?>" >Attendance</a>
+                  </li>
+                  <li class="menu-item-has-children dropdown">
+                     <a href="<?php echo base_url('student/statistics'); ?>" >Statistics</a>
                   </li>
                </ul>
             </div>
@@ -21,7 +24,7 @@
          <header id="header" class="header">
             <div class="top-left">
                <div class="navbar-header">
-                  <a class="navbar-brand" href="<?php echo base_url('/student/account'); ?>">Student</a>
+                  <a class="navbar-brand" href="<?php echo base_url('/student/dashboard'); ?>">Student</a>
                   <a class="navbar-brand hidden" href="index.html"><img src="images/logo2.png" alt="Logo"></a>
                   <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                </div>

@@ -358,7 +358,7 @@ class Admin extends BaseController{
             }
          }
          $loop_exit = 0;
-         foreach($class_arr as $k => $v){2
+         foreach($class_arr as $k => $v){
             if($loop_exit == 1){
             break;
             }
@@ -436,9 +436,13 @@ class Admin extends BaseController{
                $row[$i]['status'] = $v['status'];
                $row[$i]['new_reg'] = 'YES';
             }
+            else if($v['status'] == '1'){
+               // $row[$i]['new_reg'] = 'NO';
+               // unset($row[$i]['status']);
+               unset($row[$i]);
+            }
             else{
                $row[$i]['new_reg'] = 'NO';
-               unset($row[$i]['status']);
             }
             $i++;
         }
@@ -464,10 +468,6 @@ class Admin extends BaseController{
       return view('admin/class_list', $data);
    }
 
-   public function class_time_tbl(){
-
-      return view('admin/time_tbl.php');
-   }
 
 	public function student_add($class, $uniqid = ''){
       //$data['updated_records'] = null;

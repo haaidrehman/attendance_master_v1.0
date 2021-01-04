@@ -27,7 +27,7 @@
                         //     //     echo "<div class='dropdown-divider'></div>";
                         //     // }
                         // }
-                        echo view_cell('App\Controllers\Teacher::class_specific_attendance_cat');
+                       echo view_cell('App\Controllers\Teacher::class_specific_attendance_cat');
                         ?>
                     </div>
                 </li>
@@ -42,17 +42,17 @@
                         ?>
                     </div>
                 </li>
-                <li class="menu-item-has-children dropdown">
+                <!-- <li class="menu-item-has-children dropdown">
                     <a class="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false">
                         View Statistics
                     </a>
                     <div class="c_dm dropdown-menu" aria-labelledby="navbarDropdown">
                         <?php
-                       echo view_cell('App\Controllers\Teacher::class_specific_attendance_statistics');
+                       //echo view_cell('App\Controllers\Teacher::class_specific_attendance_statistics');
                         ?>
                     </div>
-                </li>
+                </li> -->
             </ul>
         </div>
     </nav>

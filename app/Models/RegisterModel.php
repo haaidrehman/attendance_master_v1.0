@@ -178,6 +178,47 @@ class RegisterModel extends Model{
       }
    }
 
+
+   public function getStudentDetails($id){
+      $data = false;
+      $builder = $this->db->table('student');
+      $builder->select('fname, lname, age, class_id, roll_no, phone, email, address, profile_pic, reg_id');
+      $builder->where(['id' => $id]);
+      $r = $builder->get();
+      if($r->getResultArray() != null){
+         $data = $r->getResultArray();
+      }
+
+      return $data;
+   }
+
+
+   public function update_std_details($data, $id){
+
+      $builder = $this->db->table('student');
+      $builder->where(['id' => $id]);
+      $r = $builder->update(['fname' => $data['fname'], 'lname'  => $data['lname'], 'age' => $data['age'], 'phone' => $data['phone'], 'email' => $data['email'], 'address' => $data['address']]);
+      if($r){
+         return true;
+      }
+      else{
+         return false;
+      }
+   }
+
+
+   public function uploadStudentPic($file, $id){
+      $builder = $this->db->table('student');
+      $builder->where(['id' => $id]);
+      $r = $builder->update(['profile_pic' => $file]);
+      if($r){
+         return true;
+      }
+      else{
+         return false;
+      }
+   }
+
 }
 
 ?>

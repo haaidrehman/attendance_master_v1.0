@@ -36,9 +36,6 @@
                 <li class="menu-item-has-children dropdown">
                     <a href="<?php echo base_url('teacher/add'); ?>">Add Staff</a>
                 </li>
-                <li class="menu-item-has-children dropdown">
-                    <a href="<?php echo base_url('class/timetable'); ?>">Time Table</a>
-                </li>
             </ul>
         </div>
     </nav>

@@ -225,6 +225,49 @@ display: none;
 .custom-card-bg{
     background-color: #cafff8;
 }
+.user-info-detailing {
+    height: 50px;
+    background: #e9ecef;
+    line-height: 50px;
+    margin-top: 18px;
+    padding: 0px 20px;
+}
+.user-info img{
+    max-width: 150px;
+}
+.subject-wrapper{
+    width: 150px;
+    height: 120px;
+    line-height: 120px;
+    margin-left: 10px;
+}
+.subject-wrapper button{
+    background: transparent;
+    border: none;
+}
+.subject-wrapper:hover button{
+   color: #f44336;
+}
+.month-selector li{
+    display: inline-block;
+    background-color: thistle;
+    margin-left: 10px;
+    width: 120px;
+    text-align: center;
+    margin-top: 10px;
+}
+.month-selector li a{
+    display: block;
+    padding: 5px 0px;
+}
+.month-selector li a:hover{
+    color: white;
+}
+.select-year-attendance{
+    max-width: 150px;
+    margin-left: 24px;
+    display: none;
+}
 /*-------media query-------*/
 
 @media only screen and (min-width: 768px) and (max-width: 991px){

@@ -11,7 +11,7 @@
                         <input type="hidden" name="<?php echo csrf_token(); ?>" value="<?php echo csrf_hash(); ?>">
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="username" name="username" class="form-control"
+                            <input type="username" name="username" class="remove__outline form-control"
                                 value="<?php echo set_value('username'); ?>" placeholder="Username">
                             <span class="field-error">
                                 <?php
@@ -30,7 +30,7 @@
                         </div>
                         <div class="form-group">
                             <label>Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="Password">
+                            <input type="password" name="password" class="remove__outline form-control" placeholder="Password">
                             <span class="field-error">
                                 <?php
                            if($errors != null){

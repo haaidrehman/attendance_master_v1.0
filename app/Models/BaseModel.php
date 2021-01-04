@@ -27,13 +27,15 @@ class BaseModel extends Model{
    
    public function class_based_registrations(){
       $row = null;
-      $builder = $this->db->table('class');
-      $builder->select('class, class.id, status');
-      $builder->join('new_registration', 'class.id = new_registration.class_id', 'left');
-      $builder->orderBy('id', 'ASC');
-      $r = $builder->get();
-      if($r->getResultArray() != null){
-         $row = $r->getResultArray(); 
+      // $builder = $this->db->table('class');
+      // $builder->select('class, class.id, status');
+      // $builder->join('new_registration', 'class.id = new_registration.class_id', 'left');
+      // $builder->orderBy('id', 'ASC');
+      //  $r = $builder->get();
+
+      $query = $this->db->query("SELECT DISTINCT(class.id), class.class, new_registration.status FROM class LEFT JOIN new_registration ON class.id = new_registration.class_id ORDER BY id ASC");
+      if($query->getResultArray() != null){
+         $row = $query->getResultArray(); 
       }
       return $row;
    }
@@ -46,7 +48,7 @@ class BaseModel extends Model{
          $builder->select('fname, lname, age, gender, class, roll_no, reg_id, added_on, student.id, class_id ');
          $builder->join('student', 'class.id = student.class_id');
          $builder->where(['class_id' => $get_class_id]);
-         $builder->orderBy('roll_no', 'ASC');
+         $builder->orderBy('student.roll_no', 'ASC');
          $r = $builder->get();
          if($r->getResultArray() != null){
             $row = $r->getResultArray();
@@ -202,7 +204,7 @@ class BaseModel extends Model{
       }
       else{
          $builder->join('attendance_tbl', 'student.id = attendance_tbl.std_id AND attendance_tbl.subject_id = attendance_detail.subject_id', 'left');
-         $builder->where(['attendance_detail.id' => $row['id'], 'attendance_detail.class_id' => $row['class_id'], 'attendance_detail.subject_id' => $row['subject_id'], 'attendance_detail.year' => $row['year'], 'student.roll_no !=' => 'null', 'date' => $date]);
+         $builder->where(['attendance_detail.id' => $row['id'], 'attendance_detail.class_id' => $row['class_id'], 'attendance_detail.subject_id' => $row['subject_id'], 'attendance_detail.year' => $row['year'], 'student.roll_no !=' => 'null']);
          $builder->orderBy('student.roll_no', 'ASC');
       }
       
@@ -324,6 +326,90 @@ class BaseModel extends Model{
       else{
          return false;
       }
+   }
+
+   public function student_attendance_data($std_id, $subject_id, $month, $year){
+      // $date = date('Y-m-d');
+      // str_replace();
+
+      $r = $this->db->query("SELECT `present`, `absent`, DAY(date) as 'day', MONTH(date) as 'month' FROM attendance_tbl WHERE std_id = $std_id AND subject_id = $subject_id AND MONTH(date) = $month AND YEAR(date) = $year ORDER BY DAY(date) ASC");
+      // $builder = $this->db->table('attendance_tbl');
+      // $builder->select('date');
+      // $builder->distinct('YEAR(date), MONTH(date) as Months');
+      // $builder->where(['std_id' => $std_id, 'subject_id' => $subject_id]);
+      // $r = $builder->get();
+      if($r->getResultArray() != null){
+         return $r->getResultArray();
+      }
+      else{
+         return false;
+      }
+      // return $month;
+      
+   }
+
+
+   public function attendance_notification($id){
+
+      // Select first date and last date of a year
+      $r = $this->db->query("SELECT MIN(date) as first_date, MAX(date) as last_date FROM attendance_tbl");
+      $result = $r->getResultArray();
+      $fisrt_date = $result[0]['first_date'];
+      $last_date = $result[0]['last_date'];
+      $fisrt_date = strtotime($fisrt_date);
+      $last_date = strtotime($last_date);
+      
+      $diff = $last_date - $fisrt_date;
+
+      $days = ($diff / (24 * 60 * 60));
+
+
+      // Count total attendance of a student for presen = 1
+      $c = $this->db->query("SELECT COUNT(present) as attendance_count FROM attendance_tbl WHERE std_id = $id AND present = 1");
+      $attendance_count = $c->getResultArray();
+
+
+      // Count total months
+      $c = $this->db->query("SELECT COUNT(DISTINCT(MONTH(date))) as months_count FROM attendance_tbl");
+      $months_count = $c->getResultArray();
+
+      $row = [];
+      $row['total_days'] = $days;
+      $row['attendance_count'] = $attendance_count[0]['attendance_count'];
+      $row['months_count'] = $months_count[0]['months_count'];
+
+      return $row;
+   }
+
+
+   public function attendance_statistics($id){
+      $row = [];
+      $r = $this->db->query("SELECT MIN(date) as first_date, MAX(date) as last_date,  MIN(MONTH(date)) as starting_month, MAX(MONTH(date)) as ending_month FROM attendance_tbl");
+      if($r->getResultArray() != null){
+         $row[0] = $r->getResultArray();
+      }
+      $r = $this->db->query("SELECT DISTINCT(MONTH(date)) as months FROM attendance_tbl ORDER BY(MONTH(date)) ASC");
+      if($r->getResultArray() != null){
+         $row[1] = $r->getResultArray();
+      }
+      $r = $this->db->query("SELECT MONTH(date) as month_num, COUNT(DAY(date)) as attendance_count FROM attendance_tbl WHERE std_id = $id AND present = 1 GROUP BY(MONTH(date)) ORDER BY(id) ASC");
+      if($r->getResultArray() != null){
+
+         // $row[2][0] = ['attendance_count' => '0'];
+         //  $row[2][1] = $r->getResultArray();
+
+         //$row[2][0] = ['attendance_count' => '0'];
+         foreach($r->getResultArray() as $k => $v){
+            $row[2][$k] = $v; 
+         }
+         return $row;
+      }
+      else{
+         return null;
+         exit();
+      }
+
+      return $row;
    }
 
 }

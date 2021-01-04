@@ -114,7 +114,7 @@
                                             <input type="hidden" name="staff_id" id="staff_id">
                                             <label style="float-left">First Name</label>
                                             <input id="fname" class="form-control mb-3" type="text" name="fname"
-                                                placeholder="First Name" value="" style="width: 80%; float-right">
+                                                placeholder="First Name" value="">
                                                 <label>Last Name</label>
                                             <input id="lname" class="form-control mt-3" type="text" value=""
                                                 name="lname" placeholder="Last Name">
